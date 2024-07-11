@@ -1,0 +1,27 @@
+node
+{
+
+def mavanHome = tool name: "maven3.9.8"
+
+properties([buildDiscarder(logRotator(artifactDaysToKeepStr: '', artifactNumToKeepStr: '5', daysToKeepStr: '', numToKeepStr: '5')), pipelineTriggers([pollSCM('* * * * *')])])
+
+stage('CheckoutCode')
+{
+git branch: 'development', credentialsId: '3b3deb0e-aaf3-408f-8b96-2c7b56f5663c', url: 'https://github.com/MithunTechnologiesDevOps/maven-web-application.git'
+}
+
+stage('build')
+{
+sh "${mavanHome}/bin/mvn clean package"
+}
+
+stage('SendEmailNotification')
+{
+emailext body: '''Build is over
+
+Regards,
+Ravi Sankar''', subject: 'Build is over', to: 'ravisankar.manuvarthi@gmail.com'
+}
+ 
+
+}
